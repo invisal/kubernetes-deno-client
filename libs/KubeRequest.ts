@@ -1,4 +1,4 @@
-import KubeResource from "./types/KubeResource.ts";
+import KubeResource, { KubeResourceList } from "./types/KubeResource.ts";
 
 export default class KubeRequest {
   protected serverUrl: string;
@@ -49,11 +49,23 @@ export default class KubeRequest {
     return json;
   }
 
-  async getDeployments(namespace?: string): Promise<KubeResource> {
+  async getDeployments(namespace?: string): Promise<KubeResourceList> {
     const url = namespace
       ? `/apis/apps/v1/namespaces/${namespace}/deployments`
       : "/apis/apps/v1/deployments";
 
+    return await this.request("GET", url);
+  }
+
+  async getConfigMap(namespace: string, name: string): Promise<KubeResource> {
+    const url = `/api/v1/namespaces/${namespace}/configmaps/${name}`;
+    return await this.request("GET", url);
+  }
+
+  async getConfigMaps(namespace?: string): Promise<KubeResourceList> {
+    const url = namespace
+      ? `/api/v1/namespaces/${namespace}/configmaps`
+      : `/api/v1/configmaps`;
     return await this.request("GET", url);
   }
 

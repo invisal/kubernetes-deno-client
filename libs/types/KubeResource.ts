@@ -1,5 +1,11 @@
 import KubeObjectMeta from "./KubeObjectMeta.ts";
 
+export interface KubeResourceList {
+  apiVersion: string;
+  kind: "ConfigMapList";
+  items: KubeResource[];
+}
+
 export default interface KubeResource {
   apiVersion: string;
   kind: "Pod" | "Deployment" | "ConfigMap";
