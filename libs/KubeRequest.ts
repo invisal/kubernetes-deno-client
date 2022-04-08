@@ -40,6 +40,12 @@ export default class KubeRequest {
     } as RequestInit);
 
     const json: T = await r.json();
+
+    if (r.status !== 200) {
+      // deno-lint-ignore no-explicit-any
+      throw (json as any).message;
+    }
+
     return json;
   }
 
