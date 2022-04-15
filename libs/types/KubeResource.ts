@@ -1,5 +1,4 @@
-import KubeDeploymentSpec from "./KubeDeploymentSpec.ts";
-import KubeObjectMeta from "./KubeObjectMeta.ts";
+import KubeResourceBase from "./KubeResourceBase.ts";
 
 export interface KubeResourceList {
   apiVersion: string;
@@ -7,15 +6,12 @@ export interface KubeResourceList {
   items: KubeResource[];
 }
 
-export default interface KubeResource {
+export default interface KubeResource extends KubeResourceBase {
   apiVersion: string;
   kind: "Pod" | "Deployment" | "ConfigMap";
-  metadata?: KubeObjectMeta;
 
   // Mainly used for ConfigMap
   data?: { [key: string]: string };
   binaryData?: { [key: string]: Uint8Array };
   immutable?: boolean;
-
-  spec: KubeDeploymentSpec;
 }

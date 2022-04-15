@@ -1,15 +1,17 @@
 /* eslint-disable */
 import KubeRequestBase from "./KubeRequestBase.ts";
+import KubeDeployment from "./types/Deployment/KubeDeployment.ts";
 import KubeResource from "./types/KubeResource.ts";
+import { KubeResponseList } from "./types/KubeResponseList.ts";
 
 export default class KubeRequest extends KubeRequestBase {
   // Deployments
   // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#deployment-v1-apps
-  getDeployment = async (namespace: string, name: string) => await this.handleGetPattern("/apis/apps/v1", "deployments", namespace, name);
-  getDeployments = async (namespace?: string) => await this.handleGetListPattern("/apis/apps/v1", "deployments", namespace);
-  createDeployments = async (namespace: string, resource: KubeResource) => await this.handleCreatePattern("/api/v1", "deployments", namespace, resource);
-  deleteDeployments = async (namespace: string, name: string) => await this.handleDeletePattern("/api/v1", "deployments", namespace, name);
-  updateDeployments = async (namespace: string, resource: KubeResource) => await this.handleUpdatePattern("/api/v1", "deployments", namespace, resource);
+  getDeployment = async (namespace: string, name: string) => await this.handleGetPattern<KubeDeployment>("/apis/apps/v1", "deployments", namespace, name);
+  getDeployments = async (namespace?: string) => await this.handleGetListPattern<KubeResponseList<"Deployment", KubeDeployment>>("/apis/apps/v1", "deployments", namespace);
+  createDeployments = async (namespace: string, resource: KubeDeployment) => await this.handleCreatePattern("/api/v1", "deployments", namespace, resource);
+  deleteDeployments = async (namespace: string, name: string) => await this.handleDeletePattern<KubeDeployment>("/api/v1", "deployments", namespace, name);
+  updateDeployments = async (namespace: string, resource: KubeDeployment) => await this.handleUpdatePattern("/api/v1", "deployments", namespace, resource);
 
   // ConfigMap
   // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#configmap-v1-core

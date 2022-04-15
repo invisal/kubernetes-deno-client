@@ -1,4 +1,5 @@
 import KubeResource, { KubeResourceList } from "./types/KubeResource.ts";
+import KubeResourceBase from "./types/KubeResourceBase.ts";
 
 export default class KubeRequestBase {
   protected serverUrl: string;
@@ -49,11 +50,11 @@ export default class KubeRequestBase {
     return json;
   }
 
-  protected async handleGetListPattern(
+  protected async handleGetListPattern<T = KubeResourceList>(
     prefix: string,
     kind: string,
     namespace?: string
-  ): Promise<KubeResourceList> {
+  ): Promise<T> {
     const url = namespace
       ? `${prefix}/namespaces/${namespace}/${kind}`
       : `${prefix}/${kind}`;
@@ -61,42 +62,33 @@ export default class KubeRequestBase {
     return await this.request("GET", url);
   }
 
-  protected async handleGetPattern(
+  protected async handleGetPattern<T extends KubeResourceBase = KubeResource>(
     prefix: string,
     kind: string,
     namespace: string,
     name: string
-  ): Promise<KubeResource> {
+  ): Promise<T> {
     const url = `${prefix}/namespaces/${namespace}/${kind}/${name}`;
     return await this.request("GET", url);
   }
 
-  protected async handleDeletePattern(
-    prefix: string,
-    kind: string,
-    namespace: string,
-    name: string
-  ): Promise<KubeResource> {
+  protected async handleDeletePattern<
+    T extends KubeResourceBase = KubeResource
+  >(prefix: string, kind: string, namespace: string, name: string): Promise<T> {
     const url = `${prefix}/namespaces/${namespace}/${kind}/${name}`;
     return await this.request("DELETE", url);
   }
 
-  protected async handleCreatePattern(
-    prefix: string,
-    kind: string,
-    namespace: string,
-    resource: KubeResource
-  ): Promise<KubeResource> {
+  protected async handleCreatePattern<
+    T extends KubeResourceBase = KubeResource
+  >(prefix: string, kind: string, namespace: string, resource: T): Promise<T> {
     const url = `${prefix}/namespaces/${namespace}/${kind}`;
     return await this.request("POST", url, resource);
   }
 
-  protected async handleUpdatePattern(
-    prefix: string,
-    kind: string,
-    namespace: string,
-    resource: KubeResource
-  ): Promise<KubeResource> {
+  protected async handleUpdatePattern<
+    T extends KubeResourceBase = KubeResource
+  >(prefix: string, kind: string, namespace: string, resource: T): Promise<T> {
     const name = resource.metadata?.name;
     const url = `${prefix}/namespaces/${namespace}/${kind}/${name}`;
     return await this.request("PUT", url, resource);

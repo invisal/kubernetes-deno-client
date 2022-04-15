@@ -1,6 +1,6 @@
+import KubeLabelSelector from "../KubeLabelSelector.ts";
+import KubePodTemplateSpec from "../KubePodTemplateSpec.ts";
 import KubeDeploymentStrategy from "./KubeDeploymentStrategy.ts";
-import KubeLabelSelector from "./KubeLabelSelector.ts";
-import KubePodTemplateSpec from "./KubePodTemplateSpec.ts";
 
 // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#deploymentspec-v1-apps
 export default interface DeploymentSepc {
