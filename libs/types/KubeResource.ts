@@ -1,3 +1,4 @@
+import KubeDeploymentSpec from "./KubeDeploymentSpec.ts";
 import KubeObjectMeta from "./KubeObjectMeta.ts";
 
 export interface KubeResourceList {
@@ -15,4 +16,6 @@ export default interface KubeResource {
   data?: { [key: string]: string };
   binaryData?: { [key: string]: Uint8Array };
   immutable?: boolean;
+
+  spec: KubeDeploymentSpec;
 }

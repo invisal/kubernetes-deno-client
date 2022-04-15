@@ -1,82 +1,21 @@
-import KubeResource, { KubeResourceList } from "./types/KubeResource.ts";
+/* eslint-disable */
+import KubeRequestBase from "./KubeRequestBase.ts";
+import KubeResource from "./types/KubeResource.ts";
 
-export default class KubeRequest {
-  protected serverUrl: string;
-  protected client: Deno.HttpClient;
+export default class KubeRequest extends KubeRequestBase {
+  // Deployments
+  // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#deployment-v1-apps
+  getDeployment = async (namespace: string, name: string) => await this.handleGetPattern("/apis/apps/v1", "deployments", namespace, name);
+  getDeployments = async (namespace?: string) => await this.handleGetListPattern("/apis/apps/v1", "deployments", namespace);
+  createDeployments = async (namespace: string, resource: KubeResource) => await this.handleCreatePattern("/api/v1", "deployments", namespace, resource);
+  deleteDeployments = async (namespace: string, name: string) => await this.handleDeletePattern("/api/v1", "deployments", namespace, name);
+  updateDeployments = async (namespace: string, resource: KubeResource) => await this.handleUpdatePattern("/api/v1", "deployments", namespace, resource);
 
-  constructor(
-    serverUrl: string,
-    serverCert: string,
-    userKey: string,
-    userCert: string
-  ) {
-    this.serverUrl = serverUrl;
-    // deno-lint-ignore no-explicit-any
-    this.client = (Deno as any).createHttpClient({
-      caData: serverCert,
-      caCerts: [serverCert],
-      privateKey: userKey,
-      certChain: userCert,
-    });
-  }
-
-  async request<T = unknown>(
-    method: "GET" | "POST" | "PUT" | "DELETE",
-    path: string,
-    body?: unknown
-  ) {
-    const r = await fetch(`${this.serverUrl}${path}`, {
-      method: method,
-      client: this.client,
-      ...(body
-        ? {
-            body: JSON.stringify(body),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-          }
-        : {}),
-    } as RequestInit);
-
-    const json: T = await r.json();
-
-    if (r.status !== 200) {
-      // deno-lint-ignore no-explicit-any
-      throw (json as any).message;
-    }
-
-    return json;
-  }
-
-  async getDeployments(namespace?: string): Promise<KubeResourceList> {
-    const url = namespace
-      ? `/apis/apps/v1/namespaces/${namespace}/deployments`
-      : "/apis/apps/v1/deployments";
-
-    return await this.request("GET", url);
-  }
-
-  async getConfigMap(namespace: string, name: string): Promise<KubeResource> {
-    const url = `/api/v1/namespaces/${namespace}/configmaps/${name}`;
-    return await this.request("GET", url);
-  }
-
-  async getConfigMaps(namespace?: string): Promise<KubeResourceList> {
-    const url = namespace
-      ? `/api/v1/namespaces/${namespace}/configmaps`
-      : `/api/v1/configmaps`;
-    return await this.request("GET", url);
-  }
-
-  async createConfigMap(namespace: string, resource: KubeResource) {
-    const url = `/api/v1/namespaces/${namespace}/configmaps`;
-    return await this.request("POST", url, resource);
-  }
-
-  async updateConfigMap(namespace: string, resource: KubeResource) {
-    const name = resource.metadata?.name;
-    const url = `/api/v1/namespaces/${namespace}/configmaps/${name}`;
-    return await this.request("PUT", url, resource);
-  }
+  // ConfigMap
+  // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.19/#configmap-v1-core
+  getConfigMap = async (namespace: string, name: string) => await this.handleGetPattern("/api/v1", "configmaps", namespace, name);
+  getConfigMaps = async (namespace?: string) => await this.handleGetListPattern("/api/v1", "configmaps", namespace);
+  createConfigMap = async (namespace: string, resource: KubeResource) => await this.handleCreatePattern("/api/v1", "configmaps", namespace, resource);
+  deleteConfigMap = async (namespace: string, name: string) => await this.handleDeletePattern("/api/v1", "configmaps", namespace, name);
+  updateConfigMap = async (namespace: string, resource: KubeResource) => await this.handleUpdatePattern("/api/v1", "configmaps", namespace, resource);
 }
